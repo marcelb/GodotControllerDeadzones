@@ -1,14 +1,19 @@
 extends Node2D
 
-enum DEADZONE_VARIANT { NONE, AXIAL, SCALED_AXIAL, RADIAL, SCALED_RADIAL }
+const HALF_PI = PI/2
+enum DEADZONE_VARIANT { NONE, AXIAL, SCALED_AXIAL, RADIAL, SCALED_RADIAL, SCALED_RADIAL_ANGLE_RESTRICTED }
 
 @export var deadzoneVariant:DEADZONE_VARIANT = DEADZONE_VARIANT.NONE
 @export var SPEED = 20000
 @export var DEAD_ZONE = 0.25
+@export var ANGLE_RESTRICION_DEGREES = 15.0
 
 @onready var Actor = $Actor
 @onready var ControllerInputUI:ControllerInputUI = $CanvasLayer/ControllerInputUI
 @onready var DeadzoneLabel:Label = $CanvasLayer/DeadzoneLabel
+
+var ANGLE_RESTRICTION_RADIANS = deg_to_rad(ANGLE_RESTRICION_DEGREES)
+var ANGLE_RESTRICTION_RADIANS_COMPLEMENTARY = HALF_PI - ANGLE_RESTRICTION_RADIANS
 
 func _ready():
 	DeadzoneLabel.text = DEADZONE_VARIANT.keys()[deadzoneVariant]
@@ -33,6 +38,9 @@ func showInUI(realValue: Vector2, deadzoned: Vector2):
 	print("dead: ", deadzoned, " mag: ", deadzoned.length(), "\n")
 	ControllerInputUI.updateRealValue(realValue)
 	ControllerInputUI.updateDeadzonedValue(deadzoned)
+
+func isValueInRange(value, min_value, max_value) -> bool:
+	return value >= min_value and value <= max_value
 
 func axialDeadzone(rawVector, deadzone):
 	var deadzonedVector = Vector2(rawVector)
@@ -72,6 +80,25 @@ func scaledRadialDeadzone(rawVector, deadzone):
 	deadzonedVector.y = deadzonedVector.y * inverse_lerp(deadzone, 1.0, magnitude)
 	
 	return deadzonedVector
+	
+func scaledRadialAngleRestrictedDeadzone(rawVector:Vector2, deadzone, angleRestrictionRadians):
+	var magnitude = rawVector.length()
+	
+	if(magnitude <= deadzone):
+		return Vector2(0,0)
+		
+	var angle_radians := rawVector.abs().angle()
+	var deadzonedVector = Vector2(rawVector)	
+	if isValueInRange(angle_radians, 0.0, angleRestrictionRadians):
+		deadzonedVector.y = 0.0
+	elif isValueInRange(angle_radians, HALF_PI-angleRestrictionRadians, HALF_PI):
+		deadzonedVector.x = 0.0
+		
+	deadzonedVector = deadzonedVector.normalized();
+	deadzonedVector.x = deadzonedVector.x * inverse_lerp(deadzone, 1.0, magnitude)
+	deadzonedVector.y = deadzonedVector.y * inverse_lerp(deadzone, 1.0, magnitude)
+
+	return deadzonedVector
 
 func _physics_process(delta):
 	var rawVector = Input.get_vector("left", "right", "up", "down", 0.0)
@@ -86,6 +113,8 @@ func _physics_process(delta):
 			deadzonedVector = radialDeadzone(rawVector, DEAD_ZONE)
 		DEADZONE_VARIANT.SCALED_RADIAL: 
 			deadzonedVector = scaledRadialDeadzone(rawVector, DEAD_ZONE)
+		DEADZONE_VARIANT.SCALED_RADIAL_ANGLE_RESTRICTED: 
+			deadzonedVector = scaledRadialAngleRestrictedDeadzone(rawVector, DEAD_ZONE, ANGLE_RESTRICTION_RADIANS)
 		DEADZONE_VARIANT.NONE, _:
 			deadzonedVector = rawVector
 	

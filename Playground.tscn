@@ -1,0 +1,36 @@
+[gd_scene load_steps=5 format=3 uid="uid://blq56ofjf5gvq"]
+
+[ext_resource type="Script" path="res://Playground.gd" id="1_6fsyl"]
+[ext_resource type="Texture2D" uid="uid://bgt87iwo12lf2" path="res://assets/ground.png" id="2_gteo1"]
+[ext_resource type="PackedScene" uid="uid://dof3hucnve0q0" path="res://scenes/Actor.tscn" id="3_76rho"]
+[ext_resource type="PackedScene" uid="uid://bgbfgrjoje6kg" path="res://scenes/ControllInputUI.tscn" id="4_3xrlv"]
+
+[node name="Playground" type="Node2D"]
+script = ExtResource("1_6fsyl")
+
+[node name="Ground" type="Sprite2D" parent="."]
+texture_filter = 1
+texture_repeat = 2
+scale = Vector2(30, 30)
+texture = ExtResource("2_gteo1")
+region_enabled = true
+region_rect = Rect2(0, 0, 10000, 10000)
+
+[node name="Actor" parent="." instance=ExtResource("3_76rho")]
+position = Vector2(582, 323)
+
+[node name="Camera2D" type="Camera2D" parent="Actor"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ControllerInputUI" parent="CanvasLayer" instance=ExtResource("4_3xrlv")]
+offset_left = 10.0
+offset_top = 9.0
+offset_right = 10.0
+offset_bottom = 9.0
+
+[node name="DeadzoneLabel" type="Label" parent="CanvasLayer"]
+offset_left = 141.0
+offset_top = 13.0
+offset_right = 1137.0
+offset_bottom = 36.0

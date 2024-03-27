@@ -1,5 +1,5 @@
 # GodotControllerDeadzones
-This is some controller deadzone examples for Godot 4.2 supporting analog input (Joystick/Thumbstick).
+This is a collection of controller deadzone examples for Godot 4.2 supporting analog input (Joystick/Thumbstick).
 
 Just start the project and grab your controller/keyboard.
 

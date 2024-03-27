@@ -88,17 +88,15 @@ func scaledRadialAngleRestrictedDeadzone(rawVector:Vector2, deadzone, angleRestr
 		return Vector2(0,0)
 		
 	var angle_radians := rawVector.abs().angle()
-	var deadzonedVector = Vector2(rawVector)	
+	
+	var deadzonedVector = Vector2(rawVector)
+	
 	if isValueInRange(angle_radians, 0.0, angleRestrictionRadians):
 		deadzonedVector.y = 0.0
 	elif isValueInRange(angle_radians, HALF_PI-angleRestrictionRadians, HALF_PI):
 		deadzonedVector.x = 0.0
 		
-	deadzonedVector = deadzonedVector.normalized();
-	deadzonedVector.x = deadzonedVector.x * inverse_lerp(deadzone, 1.0, magnitude)
-	deadzonedVector.y = deadzonedVector.y * inverse_lerp(deadzone, 1.0, magnitude)
-
-	return deadzonedVector
+	return  deadzonedVector.normalized() * inverse_lerp(deadzone, 1.0, magnitude)
 
 func _physics_process(delta):
 	var rawVector = Input.get_vector("left", "right", "up", "down", 0.0)

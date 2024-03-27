@@ -6,13 +6,13 @@ enum DEADZONE_VARIANT { NONE, AXIAL, SCALED_AXIAL, RADIAL, SCALED_RADIAL, SCALED
 @export var deadzoneVariant:DEADZONE_VARIANT = DEADZONE_VARIANT.NONE
 @export var SPEED = 20000
 @export var DEAD_ZONE = 0.25
-@export var ANGLE_RESTRICION_DEGREES = 15.0
+@export var ANGLE_RESTRICTION_DEGREES = 15.0
 
 @onready var Actor = $Actor
 @onready var ControllerInputUI:ControllerInputUI = $CanvasLayer/ControllerInputUI
 @onready var DeadzoneLabel:Label = $CanvasLayer/DeadzoneLabel
 
-var ANGLE_RESTRICTION_RADIANS = deg_to_rad(ANGLE_RESTRICION_DEGREES)
+var ANGLE_RESTRICTION_RADIANS = deg_to_rad(ANGLE_RESTRICTION_DEGREES)
 var ANGLE_RESTRICTION_RADIANS_COMPLEMENTARY = HALF_PI - ANGLE_RESTRICTION_RADIANS
 
 func _ready():
